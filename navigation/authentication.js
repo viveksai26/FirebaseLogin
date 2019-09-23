@@ -11,9 +11,9 @@ import {
   Button,
 } from 'native-base';
 import * as firebase from 'firebase';
-import { Card } from 'react-native-paper';
+
 import * as LocalAuthentication from 'expo-local-authentication';
-import {firebaseConfig} from '../config'
+import { firebaseConfig } from '../config'
 
 
 if (!firebase.apps.length) {
@@ -46,37 +46,16 @@ export default class Authentication extends React.Component {
 
   componentDidMount = async () => {
     this.props.navigation.setParams({ signOut: this.signOut });
-    // if(LocalAuthentication.isEnrolledAsync()){
-    //   Alert.alert('true')
-    // }
-    LocalAuthentication.authenticateAsync('login')
+    LocalAuthentication.authenticateAsync({promptMessage:"login to continue   "})
       .then(resp => {
-        Alert.alert(JSON.stringify(resp));
+        console.log(resp)
       })
       .catch(error => {
-        Alert.alert(JSON.stringify(error));
+        console.log(resp)
       });
   };
 
-  showAndroidAlert = () => {
-    Alert.alert(
-      'Fingerprint Scan',
-      'Place your finger over the touch sensor and press scan.',
-      [
-        {
-          text: 'Scan',
-          onPress: () => {
-            this.scanFingerprint();
-          },
-        },
-        {
-          text: 'Cancel',
-          onPress: () => console.log('Cancel'),
-          style: 'cancel',
-        },
-      ]
-    );
-  };
+
 
   signUp = async () => {
     try {
@@ -88,7 +67,8 @@ export default class Authentication extends React.Component {
         );
       this.props.navigation.navigate('App');
     } catch (e) {
-      Alert.alert('Sign Up Error', JSON.stringify(e));
+      console.log(e);
+
     }
   };
 
@@ -96,27 +76,40 @@ export default class Authentication extends React.Component {
     try {
       await firebase
         .auth()
-        .signInWithEmailAndPassword(this.state.username, this.state.password)
-        firebase.auth().currentUser.getIdToken(/* forceRefresh */ true).then(function(idToken) {
-  // Send token to your backend via HTTPS
-  // ...
-  Alert.alert(JSON.stringify(idToken))
-}).catch(function(error) {
-  // Handle error
-});
-      this.props.navigation.navigate('App');
+        .signInWithEmailAndPassword(this.state.username, this.state.password).then((resp) => console.log(resp)
+        )
+      firebase.auth().currentUser.getIdToken(true).then(function (idToken) {
+        console.log(idToken,"TokenID")
+      }).catch(function (error) {
+        console.log(error);
+
+      });
+      // this.props.navigation.navigate('App');
     } catch (e) {
-      Alert.alert('Login In Error', JSON.stringify(e));
+      console.log(e);
+      
     }
   };
 
+
+
+  verify = async () => {
+    await  firebase.auth().onAuthStateChanged(user => {
+    console.log(user);
+    
+  })
+    // this.props.navigation.navigate('App');
+  }
+  
+
   signOut = async () => {
-    firebase
+    await firebase
       .auth()
       .signOut()
-      .then(resp => Alert.alert(JSON.stringify(resp)))
-      .catch(function(error) {
-        Alert.alert(JSON.stringify(error));
+      .then((resp) => console.log(resp,"signout"))
+      .catch(function (error) {
+        console.log(error,"error");
+        
       });
   };
 
@@ -156,13 +149,20 @@ export default class Authentication extends React.Component {
             <Text style={{ color: 'white' }}> Login </Text>
           </Button>
           <Button
-            style={{ marginTop: 15 }}
+            style={{ marginTop: 15 }} 
             block
             primary
             onPress={this.signOut}>
             <Text style={{ color: 'white' }}> signOut </Text>
           </Button>
-          <Text>Hui</Text>
+          <Button
+            style={{ marginTop: 15 }} 
+            block
+            primary
+            onPress={this.verify}>
+            <Text style={{ color: 'white' }}> verift token </Text>
+          </Button>
+          <Text>H  u          i</Text>
           <Text>{this.state.compatible}</Text>
           <Text>{this.state.fingerprints}</Text>
         </Content>

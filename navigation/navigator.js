@@ -7,7 +7,7 @@ import Authentication from './authentication'
 import AuthLoading from './authLoading'
 const AppStack = createStackNavigator({ Home: HomeScreen, Other: OtherScreen });
 const AuthStack = createStackNavigator({ SignIn: Authentication });
-
+    
 export default createAppContainer(
   createSwitchNavigator(
     {
