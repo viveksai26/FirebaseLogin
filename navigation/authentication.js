@@ -12,13 +12,6 @@ import {
 } from 'native-base';
 import * as firebase from 'firebase';
 
-import * as LocalAuthentication from 'expo-local-authentication';
-import { firebaseConfig } from '../config'
-
-
-if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
-}
 
 export default class Authentication extends React.Component {
   constructor(props) {
@@ -46,13 +39,6 @@ export default class Authentication extends React.Component {
 
   componentDidMount = async () => {
     this.props.navigation.setParams({ signOut: this.signOut });
-    LocalAuthentication.authenticateAsync({promptMessage:"login to continue   "})
-      .then(resp => {
-        console.log(resp)
-      })
-      .catch(error => {
-        console.log(resp)
-      });
   };
 
 
@@ -93,13 +79,7 @@ export default class Authentication extends React.Component {
 
 
 
-  verify = async () => {
-    await  firebase.auth().onAuthStateChanged(user => {
-    console.log(user);
-    
-  })
-    // this.props.navigation.navigate('App');
-  }
+  
   
 
   signOut = async () => {
