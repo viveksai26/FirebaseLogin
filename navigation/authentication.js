@@ -9,11 +9,20 @@ import {
   Input,
   Label,
   Button,
+  Left,
+  Right,
+  Icon,
+  Body,
+  Title,
+
 } from 'native-base';
 import * as firebase from 'firebase';
 
 
 export default class Authentication extends React.Component {
+  static navigationOptions = {
+    header: null,
+  };
   constructor(props) {
     super(props);
     this.state = {
@@ -24,24 +33,6 @@ export default class Authentication extends React.Component {
       result: '',
     };
   }
-  static navigationOptions = ({ navigation }) => {
-    return {
-      title: 'Authentication',
-      headerRight: (
-        <Button
-          onPress={navigation.getParam('signOut')}
-          title="LogOut"
-          color="#fff"
-        />
-      ),
-    };
-  };
-
-  componentDidMount = async () => {
-    this.props.navigation.setParams({ signOut: this.signOut });
-  };
-
-
 
   signUp = async () => {
     try {
@@ -52,8 +43,9 @@ export default class Authentication extends React.Component {
           this.state.password
         );
       this.props.navigation.navigate('App');
-    } catch (e) {
-      console.log(e);
+    } catch (error) {
+      console.log(error);
+      Alert.alert("Error",error.message)
 
     }
   };
@@ -62,35 +54,14 @@ export default class Authentication extends React.Component {
     try {
       await firebase
         .auth()
-        .signInWithEmailAndPassword(this.state.username, this.state.password).then((resp) => console.log(resp)
-        )
-      firebase.auth().currentUser.getIdToken(true).then(function (idToken) {
-        console.log(idToken,"TokenID")
-      }).catch(function (error) {
-        console.log(error);
-
-      });
-      // this.props.navigation.navigate('App');
-    } catch (e) {
-      console.log(e);
+        .signInWithEmailAndPassword(this.state.username, this.state.password)
+      this.props.navigation.navigate('AuthLoading');
+    } catch (error) {
+      console.log(error.message);
       
+      Alert.alert('error',error.message)
+
     }
-  };
-
-
-
-  
-  
-
-  signOut = async () => {
-    await firebase
-      .auth()
-      .signOut()
-      .then((resp) => console.log(resp,"signout"))
-      .catch(function (error) {
-        console.log(error,"error");
-        
-      });
   };
 
   handleClick = (event, name) => {
@@ -102,6 +73,17 @@ export default class Authentication extends React.Component {
   render = () => {
     return (
       <Container>
+        <Header  style={{paddingTop:20}}>
+          <Left>
+            <Button transparent>
+              <Icon name='menu' />
+            </Button>
+          </Left>
+          <Body>
+            <Title>Header</Title>
+          </Body>
+          <Right />
+        </Header>
         <Content>
           <Form>
             <Item floatingLabel>
@@ -122,29 +104,17 @@ export default class Authentication extends React.Component {
               />
             </Item>
           </Form>
+
+
+
           <Button style={{ marginTop: 15 }} block primary onPress={this.signUp}>
-            <Text style={{ color: 'white' }}> SignUp </Text>
+            <Text style={{ color: "white" }}>signUp</Text>
           </Button>
           <Button style={{ marginTop: 15 }} block primary onPress={this.login}>
-            <Text style={{ color: 'white' }}> Login </Text>
+            <Text style={{ color: "white" }}>Login</Text>
           </Button>
-          <Button
-            style={{ marginTop: 15 }} 
-            block
-            primary
-            onPress={this.signOut}>
-            <Text style={{ color: 'white' }}> signOut </Text>
-          </Button>
-          <Button
-            style={{ marginTop: 15 }} 
-            block
-            primary
-            onPress={this.verify}>
-            <Text style={{ color: 'white' }}> verift token </Text>
-          </Button>
-          <Text>H  u          i</Text>
-          <Text>{this.state.compatible}</Text>
-          <Text>{this.state.fingerprints}</Text>
+
+
         </Content>
       </Container>
     );
